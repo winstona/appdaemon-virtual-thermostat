@@ -1,0 +1,9 @@
+persistent_data:
+  module: persistent_data
+  global: true
+
+virtual_thermostat:
+  module: virtual_thermostat
+  class: AllVirtualThermostats
+  dependencies:
+    - persistent_data
