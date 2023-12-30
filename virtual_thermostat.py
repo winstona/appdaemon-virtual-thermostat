@@ -182,6 +182,14 @@ class FurnaceHVAC(VirtualHVAC):
     super().__init__(base_obj, *args, **kwargs)
     self.base_thermostat_entity = base_thermostat_entity
 
+    self.base_obj.listen_state(self.update_state_action, self.base_thermostat_entity, attribute='all')
+
+  def update_state_action(self, entity, attribute, old, new, kwargs):
+    self.base_obj.log(f"got FurnaceHVAC update_state_action: {entity}, {attribute}, {old}, {new}, {kwargs}")
+    self.base_obj.log(f"diffs: {DeepDiff(old, new)}")
+    
+    self.heating_action(enable=(self.base_obj.get_state(self.base_thermostat_entity, attribute='hvac_action') == 'heating'))
+
   def heating_action(self, enable=True):
     target_temp = -1
     current_temp = float(self.base_obj.get_state(self.base_thermostat_entity, attribute='current_temperature'))
