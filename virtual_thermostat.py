@@ -145,6 +145,7 @@ class VirtualHVAC():
     for t in self.watched_thermostats:
       #self.base_obj.log(f"watching: {t}")
       t.listen_state(self.thermostat_event, attribute="hvac_action")
+      t.listen_state(self.thermostat_event, attribute="hvac_action_stage")
 
   #def check_calling_heat(self, params):
   #  swing_range = 1.0
@@ -158,8 +159,15 @@ class VirtualHVAC():
 
     #self.base_obj.log(f"get hvac_actions: {[x.get_hvac_action() for x in self.watched_thermostats]}")
     if any([x.get_hvac_action() == 'heating' for x in self.watched_thermostats]):
-      self.base_obj.log(" - ensuring heat is ON")
-      self.heating_action(enable=True)
+
+      max_stage = max([int(x.get_state(attribute='hvac_action_stage') or 2) for x in self.watched_thermostats if x.get_hvac_action() == 'heating'])
+      if max_stage == 1:
+        self.base_obj.log(" - stage 1 heating (fan)")
+        self.heating_action(enable=False)
+        self.cooling_action(enable=True)
+      else:
+        self.base_obj.log(" - ensuring heat is ON")
+        self.heating_action(enable=True)
     elif any([x.get_hvac_action() == 'cooling' for x in self.watched_thermostats]):
       self.base_obj.log(" - ensuring cooling is ON")
       self.cooling_action(enable=True)
