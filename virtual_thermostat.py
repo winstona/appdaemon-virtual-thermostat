@@ -114,7 +114,7 @@ class VirtualThermostat():
 
     #persist state
     data = {k: new['attributes'][k] for k in self.saved_attrs if k in new['attributes']}
-    self.base.log(f"persisting data: {data}")
+    #self.base.log(f"persisting data: {data}")
     self.base.persist.set(f"vtstat-{self.uid}", json.dumps({k: new['attributes'][k] for k in self.saved_attrs if k in new['attributes']}))
     self.base.persist.set(f"vtstat-{self.uid}-state", new['state'])
     
