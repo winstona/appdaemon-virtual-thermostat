@@ -191,7 +191,7 @@ class FurnaceHVAC(VirtualHVAC):
       target_temp = current_temp - 2
 
     self.base_obj.log(f"setting new temp for {self.base_thermostat_entity} to: {target_temp}")
-      #self.base_obj.call_service("climate/set_temperature", target=self.base_thermostat_entity, data={'temperature': current_temp + 2})
+    self.base_obj.call_service("climate/set_temperature", entity_id=self.base_thermostat_entity, temperature=target_temp)
 
   def cooling_action(self, enable=True):
     fan_mode = 'auto'
