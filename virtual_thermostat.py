@@ -78,29 +78,38 @@ class VirtualThermostat():
     self.base.listen_state(callback, f"climate.{self.uid}", **kwargs)
 
   def update_temp(self, entity, attribute, old, new, kwargs):
+    try:
+      temp = float(new)
+    except ValueError:
+      temp = new
     self.base.set_state(f"climate.{self.uid}", attributes={
-      "current_temperature": float(new)
+      "current_temperature": temp
     })
 
   def get_hvac_action(self):
     return self.get_state(attribute='hvac_action')
+
+  def update_hvac_action(self, value):
+    self.base.log("update hvac action virtualthermostat")
+    self.set_state(attributes={"hvac_action": value})
 
   def state_change_events(self, entity, attribute, old, new, kwargs):
     #self.base.log(f"got state_change event: {entity}, {attribute}, new: {new}, {kwargs}")
     
     swing_range = 1.0
 
-    if new['attributes']['hvac_action'] != 'heating' and new['attributes']['current_temperature'] < new['attributes']['target_temp_low'] - swing_range:
-      #self.base.log("setting to heating mode")
-      self.set_state(attributes={"hvac_action": "heating"})
-    if new['attributes']['hvac_action'] != 'cooling' and new['attributes']['current_temperature'] > new['attributes']['target_temp_high'] + swing_range:
-      #self.base.log("setting to heating mode")
-      self.set_state(attributes={"hvac_action": "cooling"})
-    if ( new['attributes']['hvac_action'] != 'idle' and 
-         new['attributes']['current_temperature'] >= new['attributes']['target_temp_low'] + swing_range and 
-         new['attributes']['current_temperature'] <= new['attributes']['target_temp_high'] - swing_range ):
-      #self.base.log("setting to idle mode")
-      self.set_state(attributes={"hvac_action": "idle"})
+    if new['attributes']['current_temperature'] != 'unavailable':
+      if new['attributes']['hvac_action'] != 'heating' and new['attributes']['current_temperature'] < new['attributes']['target_temp_low'] - swing_range:
+        #self.base.log("setting to heating mode")
+        self.update_hvac_action('heating')
+      if new['attributes']['hvac_action'] != 'cooling' and new['attributes']['current_temperature'] > new['attributes']['target_temp_high'] + swing_range:
+        #self.base.log("setting to heating mode")
+        self.update_hvac_action('cooling')
+      if ( new['attributes']['hvac_action'] != 'idle' and 
+           new['attributes']['current_temperature'] >= new['attributes']['target_temp_low'] + swing_range and 
+           new['attributes']['current_temperature'] <= new['attributes']['target_temp_high'] - swing_range ):
+        #self.base.log("setting to idle mode")
+        self.update_hvac_action('idle')
 
     #persist state
     data = {k: new['attributes'][k] for k in self.saved_attrs if k in new['attributes']}
