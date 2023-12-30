@@ -26,7 +26,7 @@ class VirtualThermostat():
     self.uid = uid
     self.base = base_entity
     self.name = name
-    self.source_entity = source_entity
+    self.source_entity = {"entity_id": source_entity} if isinstance(source_entity, str) else source_entity
 
     self.saved_attrs = [
       'fan_mode',
@@ -62,9 +62,9 @@ class VirtualThermostat():
 
     self.set_state(state=state_data, attributes=attrs, replace=True)
 
-    self.base.listen_state(self.update_temp, self.source_entity)
-    self.update_temp(self.source_entity, None, None, self.base.get_state(self.source_entity), {})
+    self.base.listen_state(self.update_temp, **self.source_entity)
     self.base.listen_state(self.state_change_events, f"climate.{self.uid}", attribute='all')
+    self.update_temp(self.source_entity['entity_id'], None, None, self.base.get_state(**self.source_entity), {})
     self.base.listen_event(self.events, event="call_service", service="set_temperature", entity_id=f"climate.{self.uid}")
     self.base.listen_event(self.events, event="call_service", service="set_hvac_mode", entity_id=f"climate.{self.uid}")
 
