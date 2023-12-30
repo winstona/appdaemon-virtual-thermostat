@@ -186,7 +186,6 @@ class FurnaceHVAC(VirtualHVAC):
 
   def update_state_action(self, entity, attribute, old, new, kwargs):
     self.base_obj.log(f"got FurnaceHVAC update_state_action: {entity}, {attribute}, {old}, {new}, {kwargs}")
-    self.base_obj.log(f"diffs: {DeepDiff(old, new)}")
     
     self.heating_action(enable=(self.base_obj.get_state(self.base_thermostat_entity, attribute='hvac_action') == 'heating'))
 
