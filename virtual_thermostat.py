@@ -4,6 +4,7 @@ import json
 import configparser
 import os
 from pprint import pprint
+from pydoc import locate
 
 
 # supported_features consts
@@ -205,7 +206,12 @@ class AllVirtualThermostats(hass.Hass):
 
     self.all_thermostats = {}
     for thermostat in CONF['thermostats']:
-      self.all_thermostats[thermostat['uid']] = VirtualThermostat(self, **thermostat)
+      tstat_class = VirtualThermostat
+      if 'class' in thermostat:
+        tstat_class = locate(thermostat['class'])
+      self.log(f"tstat class: {tstat_class}")
+
+      self.all_thermostats[thermostat['uid']] = tstat_class(self, **{k: v for k,v in thermostat.items() if k not in ['class']})
 
     self.all_vhvacs = []
     for hv in CONF['hvac_sources']:
