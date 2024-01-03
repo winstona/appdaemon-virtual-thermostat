@@ -170,6 +170,7 @@ class VirtualHVAC():
         self.heating_action(enable=True)
     elif any([x.get_hvac_action() == 'cooling' for x in self.watched_thermostats]):
       self.base_obj.log(" - ensuring cooling is ON")
+      self.heating_action(enable=False)
       self.cooling_action(enable=True)
     else:
       self.base_obj.log(" - ensuring heat is OFF")
@@ -187,7 +188,7 @@ class FurnaceHVAC(VirtualHVAC):
   def update_state_action(self, entity, attribute, old, new, kwargs):
     self.base_obj.log(f"got FurnaceHVAC update_state_action: {entity}, {attribute}, {old}, {new}, {kwargs}")
     
-    self.heating_action(enable=(self.base_obj.get_state(self.base_thermostat_entity, attribute='hvac_action') == 'heating'))
+    #self.heating_action(enable=(self.base_obj.get_state(self.base_thermostat_entity, attribute='hvac_action') == 'heating'))
 
   def heating_action(self, enable=True):
     target_temp = -1
