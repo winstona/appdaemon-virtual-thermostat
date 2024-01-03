@@ -10,7 +10,7 @@ class DifferentialThermostat(virtual_thermostat.VirtualThermostat):
     base_entity.log("init diff_thermostat2")
 
   def update_hvac_action(self, value):
-    self.base.log("call update hvac+action from differentialthermostat")
+    self.base.log(f"call update hvac+action: {value} from differentialthermostat")
 
     values = []
     for x in self.differential_entities:
@@ -20,7 +20,7 @@ class DifferentialThermostat(virtual_thermostat.VirtualThermostat):
 
     self.base.log(f" got values2: {values}: diff: {max(values)-min(values)}")
 
-    if max(values)-min(values) > 5.0:
+    if value in ['idle'] or max(values)-min(values) > 5.0:
       return super().update_hvac_action(value)
     self.base.log("skipped update hvac option because diff wasnt large enough")
 
