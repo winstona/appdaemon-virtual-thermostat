@@ -1,0 +1,38 @@
+{
+  "thermostats": [
+    {
+      "uid": "master_bedroom_thermostat",
+      "name": "Master Bedroom Thermostat",
+      "source_entity": "sensor.master_bedroom_temperature"
+    },
+    {
+      "uid": "upstairs_thermostat",
+      "name": "Upstairs Thermostat",
+      "class": "custom_thermostats.DifferentialThermostat",
+      "source_entity": "sensor.upstairs_hall_temperature",
+      "differential_entities": [
+         "sensor.upstairs_hall_temperature",
+         {"entity_id": "climate.house_thermostat_climate", "attribute": "temperature"}
+      ]
+    },
+    {
+      "uid": "downstairs_thermostat",
+      "name": "Downstairs Thermostat",
+      "class": "custom_thermostats.TwoStageThemostat",
+      "source_entity": {
+         "entity_id": "climate.house_thermostat_climate",
+         "attribute": "current_temperature"
+      }
+    }
+  ],
+  "hvac_sources": [
+    {
+      "base_thermostat_entity": "climate.house_thermostat_climate",
+      "virtual_thermostat_ids": [
+        "master_bedroom_thermostat",
+        "upstairs_thermostat",
+        "downstairs_thermostat"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+type: custom:easy-layout-card
+layout_type: custom:grid-layout
+cards:
+  - type: custom:auto-entities
+    card:
+      type: custom:easy-layout-card
+      layout_type: masonry
+      cards:
+        - type: custom:stack-in-card
+          cards:
+            - type: entities
+              entities:
+                - this.entity_id
+            - type: custom:better-thermostat-ui-card
+              entity: this.entity_id
+            - type: custom:apexcharts-card
+              header:
+                colorize_states: true
+              graph_span: 4h
+              apex_config:
+                chart:
+                  height: 100px
+                legend:
+                  show: false
+                yaxis:
+                  show: false
+                  axisTicks:
+                    show: false
+                xaxis:
+                  show: false
+                  labels:
+                    show: false
+                grid:
+                  yaxis:
+                    lines:
+                      show: false
+              series:
+                - entity: this.entity_id
+                  fill_raw: last
+                  attribute: current_temperature
+                  show:
+                    extremas: true
+                  name: Current
+                - entity: this.entity_id
+                  fill_raw: last
+                  attribute: target_temp_high
+                  name: High
+                  color: blue
+                - entity: this.entity_id
+                  fill_raw: last
+                  attribute: target_temp_low
+                  name: Low
+                  color: red
+    unique: entity
+    filter:
+      include:
+        - domain: climate
+      exclude: []
