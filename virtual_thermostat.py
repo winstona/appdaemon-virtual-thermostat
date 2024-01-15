@@ -107,8 +107,8 @@ class VirtualThermostat():
         #self.base.log("setting to heating mode")
         self.update_hvac_action('cooling')
       if ( new['attributes']['hvac_action'] != 'idle' and 
-           new['attributes']['current_temperature'] >= new['attributes']['target_temp_low'] + swing_range and 
-           new['attributes']['current_temperature'] <= new['attributes']['target_temp_high'] - swing_range ):
+           new['attributes']['current_temperature'] > new['attributes']['target_temp_low'] + swing_range and 
+           new['attributes']['current_temperature'] < new['attributes']['target_temp_high'] - swing_range ):
         #self.base.log("setting to idle mode")
         self.update_hvac_action('idle')
 
@@ -188,7 +188,7 @@ class FurnaceHVAC(VirtualHVAC):
   def update_state_action(self, entity, attribute, old, new, kwargs):
     self.base_obj.log(f"got FurnaceHVAC update_state_action: {entity}, {attribute}, {old}, {new}, {kwargs}")
     
-    #self.heating_action(enable=(self.base_obj.get_state(self.base_thermostat_entity, attribute='hvac_action') == 'heating'))
+    self.thermostat_event(entity, attribute, old, new, kwargs)
 
   def heating_action(self, enable=True):
     target_temp = -1
